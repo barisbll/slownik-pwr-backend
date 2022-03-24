@@ -3,16 +3,14 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const titleSchema = new Schema({
-  title: {
+  titleName: {
     type: String,
     required: true,
   },
   posts: [
     {
-      postId: {
-        type: Schema.Types.ObjectId,
-        ref: "Post",
-      },
+      type: Schema.Types.ObjectId,
+      ref: "Post",
     },
   ],
 });
