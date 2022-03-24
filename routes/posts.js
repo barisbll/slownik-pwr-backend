@@ -4,8 +4,10 @@ const postController = require("../controller/posts");
 
 const router = express.Router();
 
-router.get("/", postController.getTest);
+router.get("/get-titles", postController.getTitles);
 
-router.post("/new-post", postController.postPost);
+router.get("/get-title/:titleId", postController.getTitle);
+
+router.post("/post-create-post/:titleId", postController.postCreatePost);
 
 module.exports = router;
