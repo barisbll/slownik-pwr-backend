@@ -1,7 +1,7 @@
-const Post = require("../model/posts");
+const Post = require("../model/titles");
 
 exports.getTest = (req, res) => {
-  res.status(200).json({ test: "test3" });
+  res.status(200).json({ test: "test4", user: req.user });
 };
 
 exports.postPost = (req, res) => {
