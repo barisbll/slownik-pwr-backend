@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 
 const secret = require("./secret");
+const errorController = require("./controller/404");
 const postRoutes = require("./routes/posts");
 const User = require("./model/users");
 
@@ -55,3 +56,13 @@ mongoose
   .catch((err) => {
     console.log(err);
   });
+
+// 404 page to catch invalid requests
+app.use(errorController.get404);
+
+// express.js error handling middleware to handle server errors
+app.use((error, req, res, next) => {
+  console.log(error);
+  if (!error.httpStatusCode) error.httpStatusCode = 500;
+  res.status(error.httpStatusCode).json({ error: error.message });
+});

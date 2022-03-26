@@ -10,4 +10,6 @@ router.get("/get-title/:titleId", postController.getTitle);
 
 router.post("/post-create-post/:titleId", postController.postCreatePost);
 
+router.post("/post-create-title", postController.postCreateTitle);
+
 module.exports = router;
