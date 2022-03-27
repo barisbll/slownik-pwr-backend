@@ -4,16 +4,16 @@ const User = require("../model/users");
 const TITLES_FETCHED_LIMIT = 20;
 
 // Gets 20 titles, those titles will be used in side menu version 1
-exports.getTitles = (req, res, next) => {
-  Title.find()
-    .limit(TITLES_FETCHED_LIMIT)
-    .select("titleName")
-    .then((titlesResult) => {
-      res.status(200).json({ output: titlesResult });
-    })
-    .catch((err) => {
-      next(err);
-    });
+exports.getTitles = async (req, res, next) => {
+  try {
+    const titlesResult = await Title.find()
+      .limit(TITLES_FETCHED_LIMIT)
+      .select("titleName");
+
+    res.status(200).json({ output: titlesResult });
+  } catch (err) {
+    next(err);
+  }
 };
 
 // Gets 1 title with all the posts and user data inside that title
