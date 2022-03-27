@@ -61,36 +61,6 @@ exports.postCreatePost = async (req, res, next) => {
   }
 };
 
-// Create a title and the first post
-exports.postCreateTitle = async (req, res, next) => {
-  const { titleName } = req.body;
-  const { user } = req;
-  const { postContent } = req.body;
-
-  const date = new Date().toISOString();
-
-  try {
-    const alreadyExistingTitle = await Title.findOne({ titleName });
-
-    if (alreadyExistingTitle) {
-      throw new Error("Title already exists!!!");
-    }
-
-    const title = new Title({
-      titleName,
-      posts: [
-        {
-          postContent,
-          date,
-          userId: user._id,
-        },
-      ],
-    });
-
-    const titleResult = await title.save();
-
-    res.status(200).json({ output: titleResult });
-  } catch (err) {
-    next(err);
-  }
+exports.test = (req, res, next) => {
+  res.json({});
 };
