@@ -1,142 +1,96 @@
 const Title = require("../model/titles");
-const Post = require("../model/posts");
 const User = require("../model/users");
-const { $where } = require("../model/titles");
 
 const TITLES_FETCHED_LIMIT = 20;
 
 // Gets 20 titles, those titles will be used in side menu version 1
-exports.getTitles = (req, res) => {
-  Title.find()
-    .limit(TITLES_FETCHED_LIMIT)
-    .then((titlesResult) => {
-      console.log(titlesResult);
-      res.status(200).json({ output: titlesResult });
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+exports.getTitles = async (req, res, next) => {
+  try {
+    const titlesResult = await Title.find()
+      .limit(TITLES_FETCHED_LIMIT)
+      .select("titleName");
+
+    res.status(200).json({ output: titlesResult });
+  } catch (err) {
+    next(err);
+  }
 };
 
 // Gets 1 title with all the posts and user data inside that title
-exports.getTitle = (req, res) => {
+exports.getTitle = async (req, res, next) => {
   const { titleId } = req.params;
 
-  let titleName;
-  const posts = [];
+  console.log(User);
+  try {
+    const titleResult = await Title.findOne({ _id: titleId })
+      .limit(20)
+      .populate("posts.userId");
 
-  Title.findById(titleId)
-    .populate("posts")
-    .then((titleResult) => {
-      console.log(titleResult);
-      titleName = titleResult.titleName;
+    if (!titleResult) throw new Error("No such a title exists!");
 
-      titleResult.posts.forEach((post, idx) => {
-        // Add post data to the array item
-        posts.push({ postContent: post.postContent, date: post.date });
-
-        User.findById(post.userId)
-          .then((userResult) => {
-            // Add username to the array item
-            posts[idx].username = userResult.username;
-
-            if (idx + 1 === titleResult.posts.length) {
-              res.status(200).json({ output: { title: titleName, posts } });
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      });
-    })
-    .catch((err) => console.log(err));
+    res.json({ output: titleResult });
+  } catch (err) {
+    next(err);
+  }
 };
 
 // Creates a post under an already created title
-exports.postCreatePost = (req, res, next) => {
+exports.postCreatePost = async (req, res, next) => {
   const { titleId } = req.params;
   const { user } = req;
   const { postContent } = req.body;
 
   const date = new Date().toISOString();
 
-  const post = new Post({
-    postContent,
-    date,
-    userId: user._id,
-    titleId,
-  });
-  post
-    .save()
-    .then((postResult) => {
-      Title.findById(titleId)
-        .then((titleFound) => {
-          titleFound.posts.push(postResult._id);
-          titleFound
-            .save()
-            .then((titleUpdated) => {
-              res.status(201).json({ output: titleUpdated });
-            })
-            .catch((err) => next(err));
-        })
-        .catch((err) => next(err));
-    })
-    .catch((err) => next(err));
+  try {
+    const titleResult = await Title.findOne({ _id: titleId });
+
+    const post = {
+      postContent,
+      date,
+      userId: user._id,
+    };
+
+    titleResult.posts.push(post);
+
+    const updatedTitleResult = await titleResult.save();
+
+    res.status(201).json({ output: updatedTitleResult });
+  } catch (err) {
+    next(err);
+  }
 };
 
-exports.postCreateTitle = (req, res, next) => {
+// Create a title and the first post
+exports.postCreateTitle = async (req, res, next) => {
   const { titleName } = req.body;
   const { user } = req;
   const { postContent } = req.body;
 
   const date = new Date().toISOString();
 
-  Title.findOne({ titleName })
-    .then((alreadyExistingTitle) => {
-      if (alreadyExistingTitle) {
-        throw new Error("Title already exists!!!");
-      }
+  try {
+    const alreadyExistingTitle = await Title.findOne({ titleName });
 
-      const title = new Title({
-        titleName,
-        posts: [],
-      });
+    if (alreadyExistingTitle) {
+      throw new Error("Title already exists!!!");
+    }
 
-      let titleReturned;
-
-      title
-        .save()
-        .then((titleResult) => {
-          titleReturned = titleResult;
-
-          const post = new Post({
-            postContent,
-            date,
-            userId: user._id,
-            titleId: titleResult._id,
-          });
-          post
-            .save()
-            .then((postResult) => {
-              titleReturned.posts.push(postResult._id);
-
-              titleReturned
-                .save()
-                .then((titleUpdated) => {
-                  res.status(201).json({ output: titleUpdated });
-                })
-                .catch((err) => {
-                  next(err);
-                });
-            })
-            .catch((err) => {
-              next(err);
-            });
-        })
-        .catch((err) => next(err));
-    })
-    .catch((err) => {
-      err.httpStatusCode = 500;
-      return next(err);
+    const title = new Title({
+      titleName,
+      posts: [
+        {
+          postContent,
+          date,
+          userId: user._id,
+        },
+      ],
     });
+
+    const titleResult = await title.save();
+
+    res.status(200).json({ output: titleResult });
+  } catch (err) {
+    next(err);
+  }
 };
