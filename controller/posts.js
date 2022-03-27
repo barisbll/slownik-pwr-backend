@@ -94,3 +94,27 @@ exports.postCreateTitle = async (req, res, next) => {
     next(err);
   }
 };
+
+// Finds a post and updates its content
+exports.putUpdatePost = async (req, res, next) => {
+  const { titleId } = req.body;
+  const { postId } = req.body;
+  const { user } = req;
+  const { postContent } = req.body;
+
+  try {
+    const titleResult = await Title.findById(titleId);
+
+    if (!titleResult) throw new Error("There is no title with that titleId");
+
+    const updatedTitle = await titleResult.updatePost(
+      postId,
+      postContent,
+      user._id
+    );
+
+    res.status(201).json({ output: updatedTitle });
+  } catch (err) {
+    next(err);
+  }
+};

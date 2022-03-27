@@ -12,4 +12,6 @@ router.post("/post-create-post/:titleId", postController.postCreatePost);
 
 router.post("/post-create-title", postController.postCreateTitle);
 
+router.put("/put-update-post", postController.putUpdatePost);
+
 module.exports = router;
