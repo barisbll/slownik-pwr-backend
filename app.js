@@ -61,7 +61,7 @@ mongoose
 app.use(errorController.get404);
 
 // express.js error handling middleware to handle server errors
-app.use((error, req, res, next) => {
+app.use((error, req, res) => {
   console.log(error);
   if (!error.httpStatusCode) error.httpStatusCode = 500;
   res.status(error.httpStatusCode).json({ error: error.message });
