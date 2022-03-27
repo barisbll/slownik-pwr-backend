@@ -14,4 +14,6 @@ router.post("/post-create-title", postController.postCreateTitle);
 
 router.put("/put-update-post", postController.putUpdatePost);
 
+router.delete("/delete-post/:titleId/:postId", postController.deleteDeletePost);
+
 module.exports = router;

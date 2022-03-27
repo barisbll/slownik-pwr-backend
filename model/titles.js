@@ -27,7 +27,7 @@ const titleSchema = new Schema({
   posts: [postSchema],
 });
 
-// Finds a post and update the post content without mutate the original post array
+// Finds a post and updates it without mutating the original post array
 titleSchema.methods.updatePost = function (postId, postContent, userId) {
   const postToUpdateIndex = this.posts.findIndex(
     (post) => post._id.toString() === postId.toString()
@@ -49,6 +49,29 @@ titleSchema.methods.updatePost = function (postId, postContent, userId) {
   // Update the post
   updatedPostsArray[postToUpdateIndex].postContent = postContent;
   updatedPostsArray[postToUpdateIndex].date = new Date().toISOString();
+
+  this.posts = updatedPostsArray;
+  return this.save();
+};
+
+// Finds a post and deletes it without mutating the original post array
+titleSchema.methods.deletePost = function (postId, userId) {
+  const postToUpdateIndex = this.posts.findIndex(
+    (post) => post._id.toString() === postId.toString()
+  );
+
+  if (postToUpdateIndex === -1)
+    throw new Error("PostId does not exist under this title");
+
+  const updatedPostsArray = [...this.posts];
+
+  if (
+    updatedPostsArray[postToUpdateIndex].userId.toString() !== userId.toString()
+  )
+    throw new Error("User can not delete other users posts");
+
+  // Delete the post
+  updatedPostsArray.splice(postToUpdateIndex, 1);
 
   this.posts = updatedPostsArray;
   return this.save();

@@ -105,8 +105,6 @@ exports.putUpdatePost = async (req, res, next) => {
   try {
     const titleResult = await Title.findById(titleId);
 
-    if (!titleResult) throw new Error("There is no title with that titleId");
-
     const updatedTitle = await titleResult.updatePost(
       postId,
       postContent,
@@ -114,6 +112,22 @@ exports.putUpdatePost = async (req, res, next) => {
     );
 
     res.status(201).json({ output: updatedTitle });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.deleteDeletePost = async (req, res, next) => {
+  const { titleId } = req.params;
+  const { postId } = req.params;
+  const { user } = req;
+
+  try {
+    const titleResult = await Title.findById(titleId);
+
+    const updatedTitle = await titleResult.deletePost(postId, user._id);
+
+    res.status(200).json({ output: updatedTitle });
   } catch (err) {
     next(err);
   }
