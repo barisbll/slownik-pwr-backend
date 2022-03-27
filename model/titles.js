@@ -2,17 +2,29 @@ const mongoose = require("mongoose");
 
 const { Schema } = mongoose;
 
-const titleSchema = new Schema({
-  titleName: {
+const postSchema = new Schema({
+  postContent: {
     type: String,
     required: true,
   },
-  posts: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "Post",
-    },
-  ],
+  date: {
+    type: Date,
+    required: true,
+  },
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+});
+
+const titleSchema = new Schema({
+  titleName: {
+    type: String,
+    unique: true,
+    required: true,
+  },
+  posts: [postSchema],
 });
 
 module.exports = mongoose.model("Title", titleSchema);
