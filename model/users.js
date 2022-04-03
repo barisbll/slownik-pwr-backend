@@ -22,4 +22,22 @@ const userSchema = new Schema({
   ],
 });
 
+// Finds a post and deletes it without mutating the original posts array
+userSchema.methods.deletePost = function (postId) {
+  const postToUpdateIndex = this.posts.findIndex(
+    (post) => post._id.toString() === postId.toString()
+  );
+
+  if (postToUpdateIndex === -1)
+    throw new Error("PostId does not exist under this title");
+
+  const updatedPostsArray = [...this.posts];
+
+  // Delete the post
+  updatedPostsArray.splice(postToUpdateIndex, 1);
+
+  this.posts = updatedPostsArray;
+  return this.save();
+};
+
 module.exports = mongoose.model("User", userSchema);

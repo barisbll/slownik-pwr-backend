@@ -55,6 +55,14 @@ exports.postCreatePost = async (req, res, next) => {
 
     const updatedTitleResult = await titleResult.save();
 
+    // Finds the lastly created post's id to add to the user
+    const createdPostsId =
+      updatedTitleResult.posts[updatedTitleResult.posts.length - 1]._id;
+
+    user.posts.push(createdPostsId);
+
+    user.save();
+
     res.status(201).json({ output: updatedTitleResult });
   } catch (err) {
     next(err);
@@ -88,6 +96,13 @@ exports.postCreateTitle = async (req, res, next) => {
     });
 
     const titleResult = await title.save();
+
+    // Finds the lastly created post's id to add to the user
+    const createdPostsId = titleResult.posts[titleResult.posts.length - 1]._id;
+
+    user.posts.push(createdPostsId);
+
+    user.save();
 
     res.status(200).json({ output: titleResult });
   } catch (err) {
@@ -126,6 +141,8 @@ exports.deleteDeletePost = async (req, res, next) => {
     const titleResult = await Title.findById(titleId);
 
     const updatedTitle = await titleResult.deletePost(postId, user._id);
+
+    user.deletePost(postId);
 
     res.status(200).json({ output: updatedTitle });
   } catch (err) {
