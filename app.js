@@ -3,8 +3,9 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 
 const secret = require("./secret");
-const errorController = require("./controller/404");
 const postRoutes = require("./routes/posts");
+const userRoutes = require("./routes/users");
+const errorController = require("./controller/404");
 const User = require("./model/users");
 
 const app = express();
@@ -33,8 +34,9 @@ app.use((req, res, next) => {
     });
 });
 
-// Post routes
+// Routes
 app.use("/posts", postRoutes);
+app.use("/users", userRoutes);
 
 mongoose
   .connect(secret.mongodbSecret)
