@@ -140,7 +140,7 @@ exports.deleteDeletePost = async (req, res, next) => {
   try {
     const titleResult = await Title.findById(titleId);
 
-    const updatedTitle = await titleResult.deletePost(postId, user._id);
+    const updatedTitle = await titleResult.deletePost(postId, user._id, Title);
 
     user.deletePost(postId);
 
