@@ -55,7 +55,7 @@ titleSchema.methods.updatePost = function (postId, postContent, userId) {
 };
 
 // Finds a post and deletes it without mutating the original post array
-titleSchema.methods.deletePost = function (postId, userId) {
+titleSchema.methods.deletePost = function (postId, userId, Title) {
   const postToUpdateIndex = this.posts.findIndex(
     (post) => post._id.toString() === postId.toString()
   );
@@ -69,6 +69,11 @@ titleSchema.methods.deletePost = function (postId, userId) {
     updatedPostsArray[postToUpdateIndex].userId.toString() !== userId.toString()
   )
     throw new Error("User can not delete other users posts");
+
+  // Delete the title if the post is the only one left
+  if (updatedPostsArray.length === 1) {
+    return Title.findByIdAndRemove(this._id);
+  }
 
   // Delete the post
   updatedPostsArray.splice(postToUpdateIndex, 1);
