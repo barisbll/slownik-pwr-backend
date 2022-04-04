@@ -22,18 +22,6 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use((req, res, next) => {
-  User.findOne()
-    .then((user) => {
-      console.log(user);
-      req.user = user;
-      next();
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-});
-
 // Routes
 app.use("/posts", postRoutes);
 app.use("/users", userRoutes);
@@ -41,18 +29,6 @@ app.use("/users", userRoutes);
 mongoose
   .connect(secret.mongodbSecret)
   .then(() => {
-    User.findOne().then((user) => {
-      if (!user) {
-        const newUser = new User({
-          username: "Baris",
-          email: "baris@test.com",
-          password: "password",
-          posts: [],
-        });
-        newUser.save();
-      }
-    });
-
     app.listen(8080);
   })
   .catch((err) => {
@@ -63,8 +39,7 @@ mongoose
 app.use(errorController.get404);
 
 // express.js error handling middleware to handle server errors
-app.use((error, req, res) => {
-  console.log(error);
-  if (!error.httpStatusCode) error.httpStatusCode = 500;
-  res.status(error.httpStatusCode).json({ error: error.message });
+app.use((error, req, res, next) => {
+  if (!error.status) error.status = 500;
+  res.status(error.status).json({ error: error.message });
 });
