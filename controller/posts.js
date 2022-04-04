@@ -20,7 +20,6 @@ exports.getTitles = async (req, res, next) => {
 exports.getTitle = async (req, res, next) => {
   const { titleId } = req.params;
 
-  console.log(User);
   try {
     const titleResult = await Title.findOne({ _id: titleId })
       .limit(20)
@@ -37,12 +36,14 @@ exports.getTitle = async (req, res, next) => {
 // Creates a post under an already created title
 exports.postCreatePost = async (req, res, next) => {
   const { titleId } = req.params;
-  const { user } = req;
+  const { userId } = req;
   const { postContent } = req.body;
 
   const date = new Date().toISOString();
 
   try {
+    const user = await User.findById(userId);
+
     const titleResult = await Title.findOne({ _id: titleId });
 
     const post = {
@@ -72,12 +73,14 @@ exports.postCreatePost = async (req, res, next) => {
 // Create a title and the first post
 exports.postCreateTitle = async (req, res, next) => {
   const { titleName } = req.body;
-  const { user } = req;
+  const { userId } = req;
   const { postContent } = req.body;
 
   const date = new Date().toISOString();
 
   try {
+    const user = await User.findById(userId);
+
     const alreadyExistingTitle = await Title.findOne({ titleName });
 
     if (alreadyExistingTitle) {
@@ -114,10 +117,12 @@ exports.postCreateTitle = async (req, res, next) => {
 exports.putUpdatePost = async (req, res, next) => {
   const { titleId } = req.body;
   const { postId } = req.body;
-  const { user } = req;
+  const { userId } = req;
   const { postContent } = req.body;
 
   try {
+    const user = await User.findById(userId);
+
     const titleResult = await Title.findById(titleId);
 
     const updatedTitle = await titleResult.updatePost(
@@ -135,9 +140,11 @@ exports.putUpdatePost = async (req, res, next) => {
 exports.deleteDeletePost = async (req, res, next) => {
   const { titleId } = req.params;
   const { postId } = req.params;
-  const { user } = req;
+  const { userId } = req;
 
   try {
+    const user = await User.findById(userId);
+
     const titleResult = await Title.findById(titleId);
 
     const updatedTitle = await titleResult.deletePost(postId, user._id, Title);
