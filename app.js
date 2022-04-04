@@ -6,7 +6,6 @@ const secret = require("./secret");
 const postRoutes = require("./routes/posts");
 const userRoutes = require("./routes/auth");
 const errorController = require("./controller/404");
-const User = require("./model/users");
 
 const app = express();
 
@@ -38,7 +37,7 @@ mongoose
 // 404 page to catch invalid requests
 app.use(errorController.get404);
 
-// express.js error handling middleware to handle server errors
+// express.js error handling middleware to handle server errors, (has to have 4 parameters)
 app.use((error, req, res, next) => {
   if (!error.status) error.status = 500;
   res.status(error.status).json({ error: error.message });
