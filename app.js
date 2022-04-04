@@ -4,7 +4,7 @@ const bodyParser = require("body-parser");
 
 const secret = require("./secret");
 const postRoutes = require("./routes/posts");
-const userRoutes = require("./routes/users");
+const userRoutes = require("./routes/auth");
 const errorController = require("./controller/404");
 const User = require("./model/users");
 

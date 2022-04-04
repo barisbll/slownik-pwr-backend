@@ -3,7 +3,7 @@ const { body } = require("express-validator");
 
 const User = require("../model/users");
 
-const userController = require("../controller/users");
+const userController = require("../controller/auth");
 
 const router = express.Router();
 
