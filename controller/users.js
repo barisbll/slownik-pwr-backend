@@ -11,3 +11,7 @@ exports.postSignup = (req, res) => {
 
   res.status("200").json({ ok: 1 });
 };
+
+exports.postLogin = (req, res) => {
+  // TODO
+};
